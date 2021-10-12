@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+/* import {useEffect, useState} from 'react';
 import {Card} from 'react-bootstrap';
 
 
@@ -46,4 +46,4 @@ function InfoCoin(coinID) {
     )
 }
 
-export default InfoCoin;
+export default InfoCoin; */
