@@ -1,49 +1,65 @@
-/* import {useEffect, useState} from 'react';
-import {Card} from 'react-bootstrap';
+import {useEffect, useState} from 'react';
+import {Card, ListGroup} from 'react-bootstrap';
+import CoinService from '../../services/coinService';
 
 
-function InfoCoin(coinID) {
+const InfoCoin = (props) => {
+    
+    const [coin, setCoin] = useState(null);
 
-    const [coin, setCoin] = useState([]);
+    const coinService = new CoinService();
 
     useEffect(() => {
-        let requestOptions = {
-            mode: 'no-cors',
-            method: 'GET',
-            redirect: 'follow',
+        onRequest()
+    }, [props.coinId])
+
+    function onRequest() {
+        const {coinId} = props;
+        if (!coinId) {
+            return;
+        }
+
+        //onCoinListLoading();
+        coinService
+            .getCoinByID(coinId)
+            .then(onCoinLoaded)
+           
             
-          };
-          
-          fetch("https://api.coincap.io/v2/candles?exchange=poloniex&interval=h8&baseId=ethereum&quoteId=bitcoin", requestOptions)
-            .then(response => response.json())
-            .then(result => setCoin(result.data))
-            .catch(error => console.log('error', error));
-
-        
-    }, [])
-
-    const renderCoinInfo = (coin) => {
-        return (
-            <Card style={{ width: '18rem' }}>
-                <Card.Body>
-                    <Card.Title>{coin.open}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">Card Subtitle</Card.Subtitle>
-                    <Card.Text>
-                    Some quick example text to build on the card title and make up the bulk of
-                    the card's content.
-                    </Card.Text>
-                    <Card.Link href="#">Card Link</Card.Link>
-                    <Card.Link href="#">Another Link</Card.Link>
-                </Card.Body>
-            </Card>
-        )
     }
 
+    const onCoinLoaded = (coin) => {
+        setCoin(coin);
+    }
+
+   
+    const content = coin === null ? null : <RenderItem coin={coin}/>;
+    
+    return (
+        <Card style={{ width: '18rem' }}>
+           {content}
+        </Card>
+    )
+
+}
+
+const RenderItem = (props) => {
+    let coin = props.coin;
+    
     return (
         <>
-            {renderCoinInfo}
+            <Card.Header>{coin.name}</Card.Header>
+            <ListGroup variant="flush">
+                <ListGroup.Item>{coin.symbol}</ListGroup.Item>
+                <ListGroup.Item>Price: ${Math.floor(coin.priceUsd*100)/100}</ListGroup.Item>
+                <ListGroup.Item>Change(24Hr): {Math.floor(coin.changePercent24Hr*100)/100}%</ListGroup.Item>
+                <ListGroup.Item>Market Cap: ${Math.floor(coin.marketCapUsd*100)/100}</ListGroup.Item>
+                <ListGroup.Item>Supply: {Math.floor(coin.supply*100)/100}</ListGroup.Item>
+                <ListGroup.Item>Max supply: {Math.floor(coin.maxSupply*100)/100}</ListGroup.Item>
+                <ListGroup.Item>Volume(24Hr): ${Math.floor(coin.volumeUsd24Hr*100)/100}</ListGroup.Item>
+                <ListGroup.Item>VWAP(24H): ${Math.floor(coin.vwap24Hr*100)/100}</ListGroup.Item>
+            </ListGroup> 
         </>
     )
 }
 
-export default InfoCoin; */
+export default InfoCoin; 

@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
+import TableCoin from './components/tableCoin/tableCoin';
 
 /* import CoinService from './services/coinService';
 
@@ -12,8 +13,7 @@ coinService.getAllCoins(); */
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
-    
+    <TableCoin/>
   </React.StrictMode>,
   document.getElementById('root')
 );

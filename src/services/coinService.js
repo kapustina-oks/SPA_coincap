@@ -1,16 +1,18 @@
+// Coincap api has issues with CORS passing Authorization header - needed to unlock limit, proxy needed to be run from run-proxy.sh
+const host = 'http://localhost:8000'
 
 class CoinService {
-    
-
     getResourse = async (url) => {
+        const token = '12e2fd18-bceb-4280-9f51-3a3650f589e6';
+        
         let requestOptions = {
-
             method: 'GET',
             redirect: 'follow',
-            header: new Headers({
-                'Authorization': 'Bearer ' + '12e2fd18-bceb-4280-9f51-3a3650f589e6',
-            }),
-            
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept-Encoding': 'gzip',
+                'Authorization':  `Bearer ${token}`,
+            }
         };
 
         let res = await fetch(url, requestOptions);
@@ -23,17 +25,16 @@ class CoinService {
     }
 
     getAllCoins = async (offset=0) => {
-        const res = await this.getResourse(`https://api.coincap.io/v2/assets?limit=10&offset=${offset}`);
+        const res = await this.getResourse(`${host}/v2/assets?limit=10&offset=${offset}`);
         return res.data;
-        
     }
 
-   
+    getCoinByID = async (id) => {
+        const res = await this.getResourse(`${host}/v2/assets/${id}`);
+        return res.data;
+    }
 
 }
-
-
-
 
 export default CoinService;
 

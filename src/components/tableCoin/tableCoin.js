@@ -1,3 +1,4 @@
+import './tableCoin.css'
 import CoinService from '../../services/coinService';
 
 import { useState, useEffect } from 'react';
@@ -6,6 +7,8 @@ import { Container, Row, Col, Table, Button} from 'react-bootstrap';
 import Header from '../header/header';
 import InfoCoin from '../infoCoin/infoCoin';
 import FooterPage from '../footer/footer';
+import NavCoin from '../nav/nav';
+//import SearchInput from '../search/search';
 
 import Skeleton from '../skeleton/skeleton';
 import ErrorMsg from '../error/errorMsg';
@@ -21,6 +24,7 @@ const TableCoin = (props) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [endedCoins, setCoinsEnded] = useState(false);
+    const [search, setSearch] = useState('');
 
     const coinService = new CoinService();
 
@@ -61,18 +65,32 @@ const TableCoin = (props) => {
 
     }
 
-    const onCoinSelected =(id)=> {
+    const onCoinSelected = (id) => {
         setSelectedCoin(id)
     }
 
+    const onSearchCoin = (input) => {
+        setSearch(input)
+    }
+
+    const filteredCoins = coins.filter(coin =>
+        coin.name.toLowerCase().includes(search.toLowerCase())
+      );
+
+
     function renderItem(arr) {
+
         const items = arr.map((coin,i) => {
+            let style = {'color': 'green'};
+            if (coin.changePercent24Hr < 0) {
+                style = {'color': 'red'}
+            }
                 return (
-                    <tr key={coin.id} onClick={()=>onCoinSelected(coin.id)}>
+                    <tr key={coin.id} >
                         <td>{coin.rank}</td>
-                        <td>{coin.name} {coin.symbol}</td>
+                        <td  onClick={() => onCoinSelected(coin.id)}>{coin.name} {coin.symbol}</td>
                         <td>{Math.floor(coin.priceUsd*100)/100}</td>
-                        <th>{Math.floor(coin.changePercent24Hr*100)/100}</th>
+                        <th style={style}>{Math.floor(coin.changePercent24Hr*100)/100}</th>
                         <th>{Math.floor(coin.vwap24Hr*100)/100}</th>
                         <th><Button variant="outline-dark" >+</Button></th>
                     </tr>
@@ -83,7 +101,7 @@ const TableCoin = (props) => {
            <>
             <Table striped bordered hover className="mt-5 text-center" >
                 <thead>
-                    <tr>
+                    <tr className="tr-header">
                         <th>#</th>
                         <th>Name</th>
                         <th>Price($)</th>
@@ -119,24 +137,38 @@ const TableCoin = (props) => {
     return (
         
             <>
-                <Container className="mt-5">
+                <Container fluid >
                     <Row>
-                        <Header top3 = {maxCoin}/>
+                        <NavCoin/>
                     </Row>
+
+                    <Container>
+                        <Row>
+                            <Header top3 = {maxCoin}/>
+                        </Row>
+{/* 
+                        <Row className="mt-5">
+                            <SearchInput onSearchCoin={onSearchCoin} filteredCoins={filteredCoins}/>
+                        </Row> */}
+
+                        <Row className="mt-3">
+                            <Col sm={8}>
+                                
+                                {spinner}
+                                {errorMsg}
+                                {content}
+                            </Col>
+                            <Col sm={4} className="mt-5">
+                                
+                                {coinSelected !== null ? <InfoCoin coinId={coinSelected}/>  : <Skeleton/>} 
+                            </Col>
+                        </Row>
+
+                    </Container>
+    
                     <Row>
-                        <Col sm={8}>
-                            {spinner}
-                            {errorMsg}
-                            {content}
-                        </Col>
-                        <Col className="mt-5">
-                            {coinSelected === null ? <Skeleton/> : <InfoCoin coinID={coinSelected}/>}
-                        </Col>
-                    </Row>
-                    
-                </Container>
-                <Container>
                         <FooterPage/>
+                    </Row>
                 </Container>
             </>
       
